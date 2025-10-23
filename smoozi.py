@@ -1,9 +1,6 @@
 import streamlit as st
 import pandas as pd
 import networkx as nx
-import pydeck as pdk
-import matplotlib.pyplot as plt
-
 st.title("📍 Панель моніторингу логістичних даних")
 
 # 1. Завантаження CSV
