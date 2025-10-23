@@ -1,8 +1,6 @@
 import streamlit as st
 import pandas as pd
-import networkx as nx
-import pydeck as pdk
-import matplotlib.pyplot as plt
+import numpy as np
 
 st.set_page_config(page_title="Логістична панель", layout="wide")
 st.title("📦 Панель моніторингу логістичних даних")
