@@ -2,23 +2,19 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 
-st.set_page_config(page_title="Логістика: простий аналіз", layout="wide")
-st.title("🚚 Моніторинг логістичних маршрутів")
+st.set_page_config(page_title="Логістика: автоматичне завантаження", layout="wide")
+st.title("🚚 Панель логістичних маршрутів")
 
-# Завантаження CSV
-uploaded_file = st.file_uploader("Завантажте CSV-файл з маршрутами", type="csv")
-if uploaded_file:
-    df = pd.read_csv(uploaded_file)
+# Автоматичне завантаження CSV
+try:
+    df = pd.read_csv("routes.csv")
     st.subheader("📄 Дані маршрутів")
     st.dataframe(df)
 
-    # Очікувані колонки: from, to, cost, time
-
-    # Унікальні точки
+    # Побудова матриці витрат
     points = sorted(set(df['from']).union(set(df['to'])))
     matrix = pd.DataFrame(np.inf, index=points, columns=points)
 
-    # Заповнення матриці витрат
     for _, row in df.iterrows():
         matrix.loc[row['from'], row['to']] = row['cost']
 
@@ -32,7 +28,7 @@ if uploaded_file:
     with col2:
         end = st.selectbox("Кінцева точка", points)
 
-    # Простий пошук найкоротшого шляху (жадібно)
+    # Простий пошук маршруту (жадібний)
     visited = set()
     current = start
     total_cost = 0
@@ -53,9 +49,10 @@ if uploaded_file:
     if current == end:
         st.success(f"Маршрут: {' → '.join(path)} (Витрати: {total_cost})")
 
-    # Зведена статистика
+    # Статистика
     st.subheader("📈 Зведена статистика")
-    st.write("Середні витрати:", round(df['cost'].mean(), 2))
-    st.write("Середній час:", round(df['time'].mean(), 2))
-else:
-    st.info("⬆️ Завантажте CSV-файл для початку.")
+    st.metric("Середні витрати", round(df['cost'].mean(), 2))
+    st.metric("Середній час", round(df['time'].mean(), 2))
+
+except FileNotFoundError:
+    st.error("❌ Файл routes.csv не знайдено. Переконайтесь, що він знаходиться поруч з app.py.")
